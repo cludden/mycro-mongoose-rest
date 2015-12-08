@@ -1,0 +1,16 @@
+{
+  "name": "restify-microservice-mongoose-rest",
+  "version": "0.0.0",
+  "description": "restify-mongoose hook for implementing restify-mongoose",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "restify-microservice",
+    "restify-microservice-mongoose",
+    "restify-mongoose"
+  ],
+  "author": "Chris Ludden",
+  "license": "MIT"
+}
