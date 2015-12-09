@@ -12,5 +12,9 @@
     "restify-mongoose"
   ],
   "author": "Chris Ludden",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "restify-mongoose": "^0.2.6"
+  }
 }

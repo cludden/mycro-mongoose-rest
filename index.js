@@ -4,8 +4,10 @@ var restifyMongoose = require('restify-mongoose'),
     _ = require('lodash');
 
 module.exports = function(cb) {
-    var self = this,
-        config = self._config['restify-mongoose'] || {},
+    var self = this;
+    self.name = 'restify-microservice-mongoose-rest';
+
+    var config = self._config['restify-mongoose'] || {},
         include = config.include,
         exclude = config.exclude,
         log = function log(level) {
@@ -14,13 +16,12 @@ module.exports = function(cb) {
                 args = [level, prefix].concat(Array.prototype.slice.call(arguments));
 
             self.log.apply(null, args);
-        }.bind(self);
+        }.bind(self),
+        supportedMethods = ['query', 'detail', 'insert', 'update', 'remove'];
 
-    log('silly', 'starting hook');
 
     if (!include && !exclude) {
         log('silly', 'No `include` or `exclude` options found in config["restify-mongoose"]');
-        log('info', 'hook complete');
         return cb();
     }
 
@@ -34,11 +35,17 @@ module.exports = function(cb) {
         var options = model._definition['restifyMongoose'] || {};
         _.defaults(options, config.options);
 
-        var controller = self.controllers[name] || {};
-        _.extend(controller, restifyMongoose(model, options));
+        var controller = self.controllers[name] || {},
+            restFactory = restifyMongoose(model, _.omit(options, supportedMethods));
+
+        restFactory = _(restFactory).pick(supportedMethods).mapValues(function(factory, method) {
+            return factory.call(restFactory, options[method] || {});
+        }).value();
+
+        _.extend(controller, restFactory);
+
         self.controllers[name] = controller;
     });
 
-    log('info', 'hook complete');
     cb();
 };
