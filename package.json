@@ -1,6 +1,6 @@
 {
   "name": "restify-microservice-mongoose-rest",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "restify-mongoose hook for implementing restify-mongoose",
   "main": "index.js",
   "scripts": {
