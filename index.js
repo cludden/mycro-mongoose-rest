@@ -3,9 +3,8 @@
 var restifyMongoose = require('restify-mongoose'),
     _ = require('lodash');
 
-module.exports = function(cb) {
+module.exports = function restify_microservice_mongoose_rest(cb) {
     var self = this;
-    self.name = 'restify-microservice-mongoose-rest';
 
     var config = self._config['restify-mongoose'] || {},
         include = config.include,
