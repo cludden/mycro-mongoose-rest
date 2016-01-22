@@ -25,7 +25,7 @@ describe('GET /api/users/:id/secret', function() {
                     .set('accept-version', '^1.0.0')
                     .expect(200)
                     .expect(function(res) {
-                        expect(res.body).to.equal('super awesome secret');
+                        expect(res.body.secret).to.equal('super awesome secret');
                     })
                     .end(fn);
             }],

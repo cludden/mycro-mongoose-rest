@@ -6,8 +6,16 @@ module.exports = function(connection, Schema) {
     };
 
     let schema = new Schema({
+        desc: String,
         name: String,
-        desc: String
+        roles: [{
+            type: Schema.Types.ObjectId,
+            ref: 'roles'
+        }],
+        users: [{
+            type: Schema.Types.ObjectId,
+            ref: 'users'
+        }]
     });
 
     return connection.model('group', schema);
