@@ -1,6 +1,6 @@
 {
   "name": "mycro-mongoose-rest",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "mycro hook for implementing restify-mongoose",
   "main": "index.js",
   "scripts": {
