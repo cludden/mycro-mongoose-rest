@@ -3,46 +3,47 @@
 var restifyMongoose = require('restify-mongoose'),
     _ = require('lodash');
 
-module.exports = function restify_microservice_mongoose_rest(cb) {
+module.exports = function mycro_mongoose_rest(cb) {
     var self = this;
 
     var config = self._config['restify-mongoose'] || {},
-        include = config.include,
-        exclude = config.exclude,
         log = function log(level) {
             var self = this,
-                prefix = '[restify-microservice-mongoose-rest]',
-                args = [level, prefix].concat(Array.prototype.slice.call(arguments));
+                prefix = '[mycro-mongoose-rest]',
+                args = [level, prefix].concat(Array.prototype.slice.call(arguments, 1));
 
             self.log.apply(null, args);
         }.bind(self),
         supportedMethods = ['query', 'detail', 'insert', 'update', 'remove'];
 
 
-    if (!include && !exclude) {
+    if (!config.models && !_.keys(config.models).length) {
         log('silly', 'No `include` or `exclude` options found in config["restify-mongoose"]');
         return cb();
     }
 
-    include = include ? (_.isArray(include) ? include : [include]) : [];
-    exclude = exclude ? (_.isArray(exclude) ? exclude : [exclude]) : [];
 
     _.each(self.models, function(model, name) {
-        if (exclude.length && exclude.indexOf(name) !== -1) return;
-        if (include.length && include.indexOf(name) === -1) return;
+        if (!config.models[name]) {
+            return;
+        }
 
-        var options = model._definition['restifyMongoose'] || {};
-        _.defaults(options, config.options);
+        var options = _.defaults({}, config.defaults || {});
+        if (_.isPlainObject(config.models[name]) && config.models[name].defaults) {
+            _.extend(options, config.models[name].defaults);
+        }
 
         var controller = self.controllers[name] || {},
             restFactory = restifyMongoose(model, _.omit(options, supportedMethods));
 
         restFactory = _(restFactory).pick(supportedMethods).mapValues(function(factory, method) {
-            return factory.call(restFactory, options[method] || {});
+            let methodOptions = _.extend(_.clone(options), config.models[name][method] || {});
+            return factory.call(restFactory, methodOptions);
         }).value();
 
-        _.extend(controller, restFactory);
+        _.defaults(controller, restFactory);
 
+        log('silly', 'augmenting controller methods for `' + name + '` controller');
         self.controllers[name] = controller;
     });
 
